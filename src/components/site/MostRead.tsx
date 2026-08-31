@@ -11,11 +11,11 @@ export function MostRead({ limit = 6 }: { limit?: number }) {
   useEffect(() => {
     getMostRead({ data: { hours: 24, limit } })
       .then((res) => {
-        console.log("MostRead", res);
+        console.log("MostRead", JSON.stringify(res));
         setItems(res);
       })
       .catch((err) => {
-        console.error("MostRead error", err);
+        console.error("MostRead error", JSON.stringify(err));
         setItems([]);
       });
   }, [limit]);
