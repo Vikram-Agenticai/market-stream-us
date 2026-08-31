@@ -1,10 +1,23 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 
 import logo from "@/assets/usbf-logo.png.asset.json";
 import { SECTIONS } from "@/lib/categories";
 import { formatUSWeekday, formatUSTime } from "@/lib/format";
+import { SearchOverlay } from "@/components/site/SearchOverlay";
+
+function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
+}
 
 export function SiteHeader({ now }: { now: string }) {
+  const [searchOpen, setSearchOpen] = useState(false);
+
   return (
     <header className="bg-background">
       <div className="mx-auto max-w-6xl px-4">
@@ -51,9 +64,21 @@ export function SiteHeader({ now }: { now: string }) {
                 </Link>
               </li>
             ))}
+            <li>
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="inline-flex items-center gap-1.5 transition-colors hover:text-accent"
+                aria-label="Open search"
+              >
+                <SearchIcon className="h-4 w-4" />
+                <span className="sr-only">Search</span>
+              </button>
+            </li>
           </ul>
         </nav>
       </div>
+
+      {searchOpen ? <SearchOverlay onClose={() => setSearchOpen(false)} /> : null}
     </header>
   );
 }

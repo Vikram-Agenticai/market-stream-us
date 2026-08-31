@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { listArticles } from "@/lib/news.functions";
 import { LeadStory, StoryCard, BriefItem } from "@/components/site/ArticleCard";
+import { MostRead } from "@/components/site/MostRead";
 import { SECTIONS } from "@/lib/categories";
-import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -55,7 +55,8 @@ function FrontPage() {
             </div>
 
             <aside className="lg:border-l lg:border-border lg:pl-8">
-              <h2 className="kicker rule-top pt-3 pb-4">Latest Business Wire</h2>
+              <MostRead limit={6} />
+              <h2 className="kicker rule-top mt-10 pt-3 pb-4">Latest Business Wire</h2>
               {column.map((article) => (
                 <BriefItem key={article.slug} article={article} />
               ))}
