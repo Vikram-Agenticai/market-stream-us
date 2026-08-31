@@ -11,6 +11,7 @@ import { BriefItem } from "@/components/site/ArticleCard";
 import { ReadingProgress } from "@/components/site/ReadingProgress";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { AdSlot } from "@/components/site/AdSlot";
+import { ArticleSkeleton } from "@/components/site/Skeletons";
 
 export const Route = createFileRoute("/article/$slug")({
   loader: async ({ params }) => {
@@ -36,7 +37,19 @@ export const Route = createFileRoute("/article/$slug")({
       ],
     };
   },
+  pendingMs: 150,
+  pendingMinMs: 300,
+  pendingComponent: ArticleSkeleton,
   notFoundComponent: StoryNotFound,
+  errorComponent: ({ error }) => (
+    <div className="mx-auto max-w-2xl px-4 py-24 text-center" role="alert">
+      <h1 className="text-3xl font-bold">This story could not be loaded</h1>
+      <p className="mt-3 text-muted-foreground">{error.message}</p>
+      <Link to="/" className="kicker mt-6 inline-block">
+        Back to the front page
+      </Link>
+    </div>
+  ),
   component: ArticlePage,
 });
 
