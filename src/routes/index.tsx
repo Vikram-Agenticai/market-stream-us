@@ -23,7 +23,14 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  loader: () => listArticles({ data: { limit: 120 } }),
+  loader: async () => {
+    try {
+      return await listArticles({ data: { limit: 120 } });
+    } catch (error) {
+      console.error("Front page load failed", error);
+      return [];
+    }
+  },
   component: FrontPage,
 });
 

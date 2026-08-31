@@ -63,15 +63,26 @@ export function formatReadingTime(minutes: number): string {
 }
 
 
+const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 /** Current calendar date in U.S. Eastern time, formatted YYYY-MM-DD. */
 export function todayUS(): string {
-  return new Intl.DateTimeFormat("en-CA", {
+  const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: US_TIME_ZONE,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(new Date());
+  }).formatToParts(new Date());
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+  const iso = `${get("year")}-${get("month")}-${get("day")}`;
+  return DATE_ONLY_RE.test(iso) ? iso : new Date().toISOString().slice(0, 10);
 }
+
+/** Coerce any input into a safe YYYY-MM-DD string. */
+function safeDate(date: string): string {
+  return DATE_ONLY_RE.test(date) ? date : todayUS();
+}
+
 
 function easternOffsetMinutes(utcDate: Date): number {
   const tzDate = new Date(utcDate.toLocaleString("en-US", { timeZone: US_TIME_ZONE }));
@@ -81,17 +92,21 @@ function easternOffsetMinutes(utcDate: Date): number {
 
 /** UTC ISO bounds covering [startDate .. endDate] as full U.S. Eastern days. */
 export function usDateRangeToIso(startDate: string, endDate: string): { from: string; to: string } {
-  const base = new Date(`${startDate}T12:00:00Z`);
+  const start = safeDate(startDate);
+  const end = safeDate(endDate);
+  const base = new Date(`${start}T12:00:00Z`);
   const offset = easternOffsetMinutes(base);
-  const from = new Date(`${startDate}T00:00:00Z`).getTime() - offset * 60000;
-  const to = new Date(`${endDate}T23:59:59.999Z`).getTime() - offset * 60000;
+  const from = new Date(`${start}T00:00:00Z`).getTime() - offset * 60000;
+  const to = new Date(`${end}T23:59:59.999Z`).getTime() - offset * 60000;
   return { from: new Date(from).toISOString(), to: new Date(to).toISOString() };
 }
 
 /** Shift a YYYY-MM-DD date string by a number of days. */
 export function shiftUSDate(date: string, days: number): string {
-  const d = new Date(`${date}T12:00:00Z`);
+  const d = new Date(`${safeDate(date)}T12:00:00Z`);
+  if (Number.isNaN(d.getTime())) return todayUS();
   d.setUTCDate(d.getUTCDate() + days);
+  if (Number.isNaN(d.getTime())) return todayUS();
   return d.toISOString().slice(0, 10);
 }
 
@@ -103,5 +118,6 @@ export function formatArchiveDate(date: string): string {
     month: "long",
     day: "numeric",
     year: "numeric",
-  }).format(new Date(`${date}T12:00:00Z`));
+  }).format(new Date(`${safeDate(date)}T12:00:00Z`));
 }
+
