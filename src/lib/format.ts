@@ -62,3 +62,46 @@ export function formatReadingTime(minutes: number): string {
   return `${minutes} min read`;
 }
 
+
+/** Current calendar date in U.S. Eastern time, formatted YYYY-MM-DD. */
+export function todayUS(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: US_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+function easternOffsetMinutes(utcDate: Date): number {
+  const tzDate = new Date(utcDate.toLocaleString("en-US", { timeZone: US_TIME_ZONE }));
+  const utc = new Date(utcDate.toLocaleString("en-US", { timeZone: "UTC" }));
+  return Math.round((tzDate.getTime() - utc.getTime()) / 60000);
+}
+
+/** UTC ISO bounds covering [startDate .. endDate] as full U.S. Eastern days. */
+export function usDateRangeToIso(startDate: string, endDate: string): { from: string; to: string } {
+  const base = new Date(`${startDate}T12:00:00Z`);
+  const offset = easternOffsetMinutes(base);
+  const from = new Date(`${startDate}T00:00:00Z`).getTime() - offset * 60000;
+  const to = new Date(`${endDate}T23:59:59.999Z`).getTime() - offset * 60000;
+  return { from: new Date(from).toISOString(), to: new Date(to).toISOString() };
+}
+
+/** Shift a YYYY-MM-DD date string by a number of days. */
+export function shiftUSDate(date: string, days: number): string {
+  const d = new Date(`${date}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Friendly label for a YYYY-MM-DD archive date. */
+export function formatArchiveDate(date: string): string {
+  return new Intl.DateTimeFormat(US_LOCALE, {
+    timeZone: "UTC",
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(`${date}T12:00:00Z`));
+}
