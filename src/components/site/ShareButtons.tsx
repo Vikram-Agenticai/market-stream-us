@@ -41,7 +41,7 @@ export function ShareButtons({ title, slug }: { title: string; slug: string }) {
         className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-background px-2.5 py-1.5 font-sans text-xs font-semibold uppercase tracking-wider transition-colors hover:bg-secondary"
         aria-label="Share this story"
       >
-        {navigator.share ? "Share" : "Copy link"}
+        {typeof navigator.share === "function" ? "Share" : "Copy link"}
       </button>
       <a
         href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
