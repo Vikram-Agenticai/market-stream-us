@@ -4,13 +4,32 @@ import { Link } from "@tanstack/react-router";
 import { getMostRead } from "@/lib/news.functions";
 import { categoryLabel } from "@/lib/categories";
 import { timeAgoUS } from "@/lib/format";
+import { RailSkeleton } from "@/components/site/Skeletons";
 
 export function MostRead({ limit = 6 }: { limit?: number }) {
   const [items, setItems] = useState<Awaited<ReturnType<typeof getMostRead>>>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getMostRead({ data: { hours: 24, limit } }).then(setItems).catch(() => setItems([]));
+    let active = true;
+    setLoading(true);
+    getMostRead({ data: { hours: 24, limit } })
+      .then((data) => active && setItems(data))
+      .catch(() => active && setItems([]))
+      .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
   }, [limit]);
+
+  if (loading) {
+    return (
+      <div className="rule-top pt-3">
+        <h2 className="kicker mb-4">Most Read</h2>
+        <RailSkeleton rows={4} />
+      </div>
+    );
+  }
 
   if (items.length === 0) return null;
 
