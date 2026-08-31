@@ -57,3 +57,8 @@ export function timeAgoUS(value: string | Date): string {
   if (hours < 24) return `${hours} hr ago`;
   return formatUSDate(date);
 }
+
+export function formatReadingTime(minutes: number): string {
+  return `${minutes} min read`;
+}
+
