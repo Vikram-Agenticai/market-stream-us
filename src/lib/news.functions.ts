@@ -198,6 +198,9 @@ export const getMostRead = createServerFn({ method: "GET" })
       return [] as Article[];
     }
 
-    const map = new Map((articles ?? []).map((a) => [a.slug, a]));
-    return slugs.map((s) => map.get(s)).filter(Boolean) as Article[];
+    const localMap = new Map(originals().map((a) => [a.slug, a]));
+    const remoteMap = new Map((articles ?? []).map((a) => [a.slug, a]));
+    return slugs
+      .map((s) => localMap.get(s) ?? remoteMap.get(s))
+      .filter(Boolean) as Article[];
   });
