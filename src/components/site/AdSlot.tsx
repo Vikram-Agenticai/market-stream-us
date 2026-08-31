@@ -29,13 +29,7 @@ export function AdSlot({
       data-ad-slot={slotId}
       className={`my-8 ${className}`}
     >
-      <p className="meta-line mb-2 text-center text-[0.6rem] tracking-[0.22em]">Advertisement</p>
-      <div
-        className={`flex flex-col items-center justify-center gap-1 border border-dashed border-border bg-muted/40 px-4 py-6 text-center ${size.className}`}
-      >
-        <span className="meta-line text-[0.62rem]">{slotId}</span>
-        <span className="font-sans text-xs text-muted-foreground">{size.label} ad unit</span>
-      </div>
+      <div className={`min-w-full ${size.className}`} />
     </aside>
   );
 }
