@@ -1,59 +1,75 @@
-# Monetization Roadmap — US Business Forum
+# UI/UX Enhancement Roadmap — US Business Forum
 
-Today the site has a front page, five section pages, article detail pages, and an automated scraper. There is no audience capture, no ads, and no paid product. Below are the revenue levers, ordered by effort-to-payoff.
+Current site: a clean broadsheet-style news front page, article detail page, and five section pages. The visual identity is strong, but there are clear UX gaps around discovery, wayfinding, content density, and reader engagement. Below are improvements grouped by impact and effort.
 
-## Tier 1 — Foundations (build first, everything else depends on them)
+## Tier 1 — Readability & trust (highest payoff, low risk)
 
-1. **Email newsletter capture**
-   Inline signup in the header, end of every article, and a footer block. Store subscribers in the backend. A daily "US Business Forum Morning Brief" auto-assembled from the top stories of the last 24 hours, sent via the platform's email service. Newsletters are the highest-CPM inventory in business media.
+1. **Article truncation cleanup**
+   Some summaries show raw cookie-policy text or cut off mid-sentence. Add a smarter summary trim that ends on a complete sentence, strips legal/boilerplate text, and never shows fewer than 40 characters.
 
-2. **Analytics + consent**
-   Page-view and article-level tracking so we can prove traffic to advertisers, plus a cookie consent banner (required before ad networks and required in the EU).
+2. **Consistent image handling**
+   Enforce a uniform aspect ratio for all card images so the grid rhythm stays intact. Add a small placeholder/background color while images load to prevent layout shift.
 
-3. **SEO depth**
-   Article JSON-LD (NewsArticle schema), sitemap.xml and news-sitemap.xml auto-generated from the article table, RSS output feed, canonical tags pointing to our page, and tag/topic archive pages. Organic search is the cheapest traffic and all ad revenue scales with it.
+3. **Reading progress & reading time**
+   On article pages show an estimated reading time and a thin progress bar fixed under the header as the user scrolls. This is expected behavior in modern news sites.
 
-## Tier 2 — Direct revenue
+4. **Byline/source clarity**
+   Separate author, source, and timestamp into distinct visual tokens (e.g. "By Dave Sebastian · Bloomberg · Aug 30, 2026, 7:39 PM EDT"). Right now the meta line is one long uppercase string that is hard to scan.
 
-4. **Ad slots**
-   Reserved, layout-stable ad units: leaderboard under the masthead, in-feed unit after the 4th story, sidebar rectangle on article pages, and a sticky mobile footer. Start with a house-ad component that can later be swapped to Google AdSense/Ad Manager without touching layout.
+5. **Topic tags / company tickers**
+   Auto-extract likely companies, sectors, or tickers from each headline and show them as clickable tags beneath summaries. Gives readers a fast scan layer and creates archive pages.
 
-5. **Sponsored content**
-   A "Partner Content" article type with its own label, badge styling, and section — sold directly, far higher margin than programmatic.
+## Tier 2 — Discovery & navigation
 
-6. **Affiliate/lead-gen modules**
-   Contextual widgets in Markets and Companies (brokerage comparisons, business banking, SaaS tools) with disclosure text.
+6. **Global search**
+   Add a search icon in the masthead that opens an overlay. Search across titles, summaries, and full content; return instant results with section filters. This is the single biggest discovery win for a growing archive.
 
-7. **Job board**
-   Paid business/finance job postings with a self-serve submit form, checkout via Stripe, admin approval, and a `/jobs` page. Niche job boards monetize well against a professional audience.
+7. **"Most Read" / "Trending" rail**
+   Replace or augment part of the "Latest Business Wire" sidebar with a "Most Read" list ranked by page views over the last 24 hours. Add a small flame/trending badge for fast-rising stories.
 
-## Tier 3 — Recurring revenue
+8. **Breadcrumb + section context**
+   On article pages show a breadcrumb (e.g. "Markets > IPOs") and a sticky sub-nav that lets readers jump to the next story in the same section.
 
-8. **Memberships (Stripe)**
-   "USBF Pro" tier: ad-free reading, full archive search, daily/weekly PDF briefing, saved articles, and email alerts on companies or keywords. Metered paywall (e.g. 5 free articles/month) on original reporting only — never on aggregated wire content.
+9. **Section landing refinement**
+   Markets, Technology, Economy, Companies, and Opinion currently mirror the front page. Add sub-section chips (e.g. Markets → Stocks, Bonds, Commodities, Crypto) so readers can filter within a section.
 
-9. **Original reporting expansion**
-   The ShelVey piece proves the format. A steady cadence of in-house exclusives is what people actually pay for and what earns backlinks; aggregation alone cannot sustain a paid tier.
+10. **Pagination / infinite scroll choice**
+    Right now each page caps at 60 stories. Add a "Load more" button or numbered pagination so power users can dig deeper without feeling the site is shallow.
 
-10. **Data products**
-    Company pages, market snapshot widgets, and a weekly "US Business Data" digest — sellable as a premium add-on and strong SEO surface.
+## Tier 3 — Engagement & retention
 
-## Tier 4 — Growth multipliers
+11. **Save / read-later**
+    Let signed-in users bookmark articles. Add a "Saved Stories" page. Even a simple localStorage version raises return-visit rate.
 
-11. Personalization: follow topics/companies, "For You" feed, saved-articles list (drives accounts, which drive email + paid conversion).
-12. Search + archive: full-text search over all ingested articles.
-13. Social/AMP-friendly share cards, per-article OG images.
-14. Reader engagement: comments on original pieces, reading-time estimates, most-read rail.
-15. Media Kit page: traffic stats, audience profile, ad specs, contact form — how advertisers actually reach you.
+12. **Newsletter signup modules**
+    Inline signup at the end of articles and a sticky footer banner for the daily "US Business Forum Morning Brief." Keep it minimal: email + one-click subscribe.
 
-## Technical notes
+13. **Share actions**
+    Add copy-link, X/Twitter, LinkedIn, and email share buttons on article pages. Use Web Share API on mobile where available.
 
-- Newsletter, memberships, and jobs all need auth; that means adding sign-in (email + Google) and a users/profiles table with role separation.
-- Payments via Stripe for memberships and job postings.
-- Ad units must be fixed-height placeholders to avoid layout shift hurting Core Web Vitals.
-- Legal pages required before any ad network or payment: Privacy Policy, Terms, Cookie Policy, Advertising Disclosure.
-- Aggregated third-party content must stay free and attributed; only original USBF work goes behind the paywall.
+14. **Commenting on originals**
+    Enable comments only on original USBF reporting (e.g. the Kenect piece). Aggregated wire stories stay read-only to avoid moderation burden.
+
+15. **Personalized "For You" feed**
+    After a user reads a few articles, surface a "Recommended for You" rail based on category affinity. Start simple: most-read from the categories they visit most.
+
+## Tier 4 — Polish & accessibility
+
+16. **Dark mode toggle**
+    Add a sun/moon toggle in the header. The current paper-and-ink palette maps naturally to a sepia or true-dark theme.
+
+17. **Mobile navigation drawer**
+    The horizontal nav will break on small screens. Replace it with a hamburger drawer plus a visible search icon.
+
+18. **Focus states & keyboard navigation**
+    Ensure all article links, nav items, and form controls have visible focus rings and logical tab order. This is required for accessibility and ad-network quality checks.
+
+19. **Reduced-motion respect**
+    Honor `prefers-reduced-motion` for any hover transitions or loading skeletons.
+
+20. **Skeleton loaders & empty states**
+    Show elegant skeleton placeholders while the front page fetches, and a richer empty state when a section has no stories.
 
 ## Suggested first build
 
-Tier 1 in full (newsletter capture + daily brief, analytics/consent, SEO schema and sitemaps) plus the ad-slot component from Tier 2 as house ads. That makes the site sellable to advertisers and starts compounding an email list immediately.
+Tier 1 plus global search and a "Most Read" rail. These are visible, low-risk improvements that make the existing content easier to read and easier to find, and they set up the data model (page views, search index) needed for later personalization.
