@@ -2,31 +2,25 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { classifyCategory } from "@/lib/categories";
 
-// News sources scraped on a schedule. RSS gives us the headline, the
-// description/full content block and (where the publisher provides it) an image.
+// News sources scraped on a schedule. Every source here publishes readable
+// article pages, so the scraper can pull the FULL story body (not just the
+// RSS blurb). Paywalled feeds (WSJ) and aggregator redirects (Google News)
+// were removed because their article pages return 401 / JS-only shells.
 const FEEDS: { url: string; source: string }[] = [
-  {
-    url: "https://feeds.content.dowjones.io/public/rss/WSJcomUSBusiness",
-    source: "The Wall Street Journal",
-  },
-  {
-    url: "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain",
-    source: "The Wall Street Journal",
-  },
-  {
-    url: "https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=en-US&gl=US&ceid=US:en",
-    source: "Google News",
-  },
-  {
-    url: "https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=en-US&gl=US&ceid=US:en",
-    source: "Google News",
-  },
-  { url: "https://feeds.a.dj.com/rss/RSSWSJD.xml", source: "The Wall Street Journal" },
   { url: "https://www.cnbc.com/id/10001147/device/rss/rss.html", source: "CNBC" },
   { url: "https://www.cnbc.com/id/20910258/device/rss/rss.html", source: "CNBC" },
+  { url: "https://www.cnbc.com/id/10000664/device/rss/rss.html", source: "CNBC" },
+  { url: "https://www.cnbc.com/id/10000115/device/rss/rss.html", source: "CNBC" },
+  { url: "https://finance.yahoo.com/news/rssindex", source: "Yahoo Finance" },
+  { url: "https://fortune.com/feed/fortune-feeds/?id=3230629", source: "Fortune" },
+  { url: "https://markets.businessinsider.com/rss/news", source: "Business Insider" },
 ];
 
-const MAX_ITEMS_PER_FEED = 30;
+const MAX_ITEMS_PER_FEED = 25;
+const FETCH_CONCURRENCY = 6;
+const BROWSER_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+
 
 const NAMED_ENTITIES: Record<string, string> = {
   lt: "<",
