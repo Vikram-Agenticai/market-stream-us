@@ -169,13 +169,17 @@ function ArchivePage() {
         </div>
       </div>
 
-      <p className="meta-line py-4">
-        {range === "day"
-          ? formatArchiveDate(end)
-          : `${formatArchiveDate(start)} — ${formatArchiveDate(end)}`}
-        {" · "}
-        {articles.length} {articles.length === 1 ? "story" : "stories"}
-      </p>
+      <div className="flex flex-wrap items-center gap-3 py-4">
+        <p className="meta-line">
+          {range === "day"
+            ? formatArchiveDate(end)
+            : `${formatArchiveDate(start)} — ${formatArchiveDate(end)}`}
+          {" · "}
+          {articles.length} {articles.length === 1 ? "story" : "stories"}
+        </p>
+        <RouteStatus label="Updating results" />
+      </div>
+
 
       <AdSlot slotId="archive-top" format="leaderboard" />
 
