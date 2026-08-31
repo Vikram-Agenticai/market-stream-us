@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 import type { Database } from "@/integrations/supabase/types";
 import { ORIGINAL_ARTICLES } from "@/content/original-articles";
+import { cleanSummary } from "@/lib/text";
 
 export type Article = {
   slug: string;
