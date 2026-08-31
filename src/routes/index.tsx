@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { listArticles } from "@/lib/news.functions";
 import { LeadStory, StoryCard, BriefItem } from "@/components/site/ArticleCard";
+import { MostRead } from "@/components/site/MostRead";
 import { SECTIONS } from "@/lib/categories";
-import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
