@@ -40,6 +40,79 @@ function publicClient() {
 function originals(): Article[] {
   return ORIGINAL_ARTICLES.map((a) => ({ ...a }));
 }
+const COLUMNS =
+  "slug,title,summary,content,author,source_name,source_url,image_url,category,published_at,is_original,is_featured";
+
+/** Articles published inside an explicit date window (U.S. Eastern days). */
+export const listArticlesByDate = createServerFn({ method: "GET" })
+  .inputValidator((data: { from: string; to: string; category?: string; limit?: number }) => data)
+  .handler(async ({ data }) => {
+    const limit = Math.min(data.limit ?? 120, 300);
+    const supabase = publicClient();
+
+    let query = supabase
+      .from("articles")
+      .select(COLUMNS)
+      .gte("published_at", data.from)
+      .lte("published_at", data.to)
+      .order("published_at", { ascending: false })
+      .limit(limit);
+
+    if (data.category) query = query.eq("category", data.category);
+
+    const { data: rows, error } = await query;
+    if (error) console.error("listArticlesByDate", error.message);
+
+    const fromMs = +new Date(data.from);
+    const toMs = +new Date(data.to);
+    const local = originals().filter((a) => {
+      const t = +new Date(a.published_at);
+      return t >= fromMs && t <= toMs && (!data.category || a.category === data.category);
+    });
+
+    return [...local, ...((rows ?? []) as Article[])]
+      .sort((a, b) => +new Date(b.published_at) - +new Date(a.published_at))
+      .slice(0, limit);
+  });
+
+/** Days that actually hold coverage, for the archive calendar hints. */
+export const getArchiveDays = createServerFn({ method: "GET" })
+  .inputValidator((data: { days?: number } = {}) => data)
+  .handler(async ({ data }) => {
+    const days = Math.min(data.days ?? 45, 180);
+    const since = new Date(Date.now() - days * 86400000).toISOString();
+    const supabase = publicClient();
+
+    const { data: rows, error } = await supabase
+      .from("articles")
+      .select("published_at")
+      .gte("published_at", since)
+      .order("published_at", { ascending: false })
+      .limit(2000);
+
+    if (error) console.error("getArchiveDays", error.message);
+
+    const counts = new Map<string, number>();
+    const add = (iso: string) => {
+      const key = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/New_York",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date(iso));
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    };
+
+    for (const row of rows ?? []) add((row as { published_at: string }).published_at);
+    for (const a of originals()) {
+      if (+new Date(a.published_at) >= +new Date(since)) add(a.published_at);
+    }
+
+    return [...counts.entries()]
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => (a.date < b.date ? 1 : -1));
+  });
+
 
 export const listArticles = createServerFn({ method: "GET" })
   .inputValidator((data: { category?: string; limit?: number }) => data ?? {})

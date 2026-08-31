@@ -10,6 +10,7 @@ import { readingTime, extractTags, cleanSummary } from "@/lib/text";
 import { BriefItem } from "@/components/site/ArticleCard";
 import { ReadingProgress } from "@/components/site/ReadingProgress";
 import { ShareButtons } from "@/components/site/ShareButtons";
+import { AdSlot } from "@/components/site/AdSlot";
 
 export const Route = createFileRoute("/article/$slug")({
   loader: async ({ params }) => {
@@ -130,6 +131,8 @@ function ArticlePage() {
               )}
             </div>
 
+            <AdSlot slotId="article-in-content" format="in-article" />
+
             <div className="rule-top mt-10 flex flex-wrap items-center justify-between gap-4 pt-5">
               <ShareButtons title={displayTitle} slug={article.slug} />
               {article.source_url ? (
@@ -152,6 +155,7 @@ function ArticlePage() {
             ) : (
               <p className="text-sm text-muted-foreground">No related stories yet.</p>
             )}
+            <AdSlot slotId="article-sidebar" format="rectangle" />
           </aside>
         </div>
       </article>

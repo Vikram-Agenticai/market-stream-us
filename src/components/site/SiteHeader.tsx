@@ -5,6 +5,7 @@ import logo from "@/assets/usbf-logo.png.asset.json";
 import { SECTIONS } from "@/lib/categories";
 import { formatUSWeekday, formatUSTime } from "@/lib/format";
 import { SearchOverlay } from "@/components/site/SearchOverlay";
+import { ThemeToggle } from "@/components/site/ThemeToggle";
 
 function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -65,6 +66,15 @@ export function SiteHeader({ now }: { now: string }) {
               </li>
             ))}
             <li>
+              <Link
+                to="/archive"
+                className="transition-colors hover:text-accent"
+                activeProps={{ className: "text-accent" }}
+              >
+                Archive
+              </Link>
+            </li>
+            <li>
               <button
                 onClick={() => setSearchOpen(true)}
                 className="inline-flex items-center gap-1.5 transition-colors hover:text-accent"
@@ -73,6 +83,9 @@ export function SiteHeader({ now }: { now: string }) {
                 <SearchIcon className="h-4 w-4" />
                 <span className="sr-only">Search</span>
               </button>
+            </li>
+            <li>
+              <ThemeToggle />
             </li>
           </ul>
         </nav>
