@@ -1,5 +1,6 @@
 import type { Article } from "@/lib/news.functions";
 import { LeadStory, StoryCard, BriefItem } from "@/components/site/ArticleCard";
+import { AdSlot } from "@/components/site/AdSlot";
 
 export function SectionPage({
   title,
@@ -39,6 +40,8 @@ export function SectionPage({
               ))}
             </div>
           ) : null}
+
+          <AdSlot slotId={`section-${title.toLowerCase()}-mid`} format="leaderboard" />
 
           {briefs.length > 0 ? (
             <section className="rule-top mt-10 pt-6">
