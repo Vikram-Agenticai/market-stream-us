@@ -29,7 +29,7 @@ export const ORIGINAL_ARTICLES: OriginalArticle[] = [
     image_url: kenectImage.url,
     category: "companies",
     published_at: "2026-04-29T13:30:00-04:00",
-    is_featured: true,
+    is_featured: false,
     is_original: true,
     content: `PLEASANT GROVE, Utah — Kenect, a business texting platform that has built a reputation helping automotive dealerships and law firms communicate with customers, announced Monday that it would acquire ShelVey, an artificial intelligence automation company, for $9.2 million in an all-cash deal.
 
