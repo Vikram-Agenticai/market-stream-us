@@ -10,8 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CompaniesRouteImport } from './routes/companies'
+import { Route as EconomyRouteImport } from './routes/economy'
 import { Route as MarketsRouteImport } from './routes/markets'
+import { Route as OpinionRouteImport } from './routes/opinion'
 import { Route as TechnologyRouteImport } from './routes/technology'
+import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as ApiPublicIngestRouteImport } from './routes/api/public/ingest'
 
 const IndexRoute = IndexRouteImport.update({
@@ -19,14 +23,34 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompaniesRoute = CompaniesRouteImport.update({
+  id: '/companies',
+  path: '/companies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EconomyRoute = EconomyRouteImport.update({
+  id: '/economy',
+  path: '/economy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketsRoute = MarketsRouteImport.update({
   id: '/markets',
   path: '/markets',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OpinionRoute = OpinionRouteImport.update({
+  id: '/opinion',
+  path: '/opinion',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TechnologyRoute = TechnologyRouteImport.update({
   id: '/technology',
   path: '/technology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArticleSlugRoute = ArticleSlugRouteImport.update({
+  id: '/article/$slug',
+  path: '/article/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicIngestRoute = ApiPublicIngestRouteImport.update({
@@ -37,35 +61,76 @@ const ApiPublicIngestRoute = ApiPublicIngestRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/companies': typeof CompaniesRoute
+  '/economy': typeof EconomyRoute
   '/markets': typeof MarketsRoute
+  '/opinion': typeof OpinionRoute
   '/technology': typeof TechnologyRoute
+  '/article/$slug': typeof ArticleSlugRoute
   '/api/public/ingest': typeof ApiPublicIngestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/companies': typeof CompaniesRoute
+  '/economy': typeof EconomyRoute
   '/markets': typeof MarketsRoute
+  '/opinion': typeof OpinionRoute
   '/technology': typeof TechnologyRoute
+  '/article/$slug': typeof ArticleSlugRoute
   '/api/public/ingest': typeof ApiPublicIngestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/companies': typeof CompaniesRoute
+  '/economy': typeof EconomyRoute
   '/markets': typeof MarketsRoute
+  '/opinion': typeof OpinionRoute
   '/technology': typeof TechnologyRoute
+  '/article/$slug': typeof ArticleSlugRoute
   '/api/public/ingest': typeof ApiPublicIngestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/markets' | '/technology' | '/api/public/ingest'
+  fullPaths:
+    | '/'
+    | '/companies'
+    | '/economy'
+    | '/markets'
+    | '/opinion'
+    | '/technology'
+    | '/article/$slug'
+    | '/api/public/ingest'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/markets' | '/technology' | '/api/public/ingest'
-  id: '__root__' | '/' | '/markets' | '/technology' | '/api/public/ingest'
+  to:
+    | '/'
+    | '/companies'
+    | '/economy'
+    | '/markets'
+    | '/opinion'
+    | '/technology'
+    | '/article/$slug'
+    | '/api/public/ingest'
+  id:
+    | '__root__'
+    | '/'
+    | '/companies'
+    | '/economy'
+    | '/markets'
+    | '/opinion'
+    | '/technology'
+    | '/article/$slug'
+    | '/api/public/ingest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CompaniesRoute: typeof CompaniesRoute
+  EconomyRoute: typeof EconomyRoute
   MarketsRoute: typeof MarketsRoute
+  OpinionRoute: typeof OpinionRoute
   TechnologyRoute: typeof TechnologyRoute
+  ArticleSlugRoute: typeof ArticleSlugRoute
   ApiPublicIngestRoute: typeof ApiPublicIngestRoute
 }
 
@@ -78,6 +143,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/companies': {
+      id: '/companies'
+      path: '/companies'
+      fullPath: '/companies'
+      preLoaderRoute: typeof CompaniesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/economy': {
+      id: '/economy'
+      path: '/economy'
+      fullPath: '/economy'
+      preLoaderRoute: typeof EconomyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/markets': {
       id: '/markets'
       path: '/markets'
@@ -85,11 +164,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/opinion': {
+      id: '/opinion'
+      path: '/opinion'
+      fullPath: '/opinion'
+      preLoaderRoute: typeof OpinionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/technology': {
       id: '/technology'
       path: '/technology'
       fullPath: '/technology'
       preLoaderRoute: typeof TechnologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/article/$slug': {
+      id: '/article/$slug'
+      path: '/article/$slug'
+      fullPath: '/article/$slug'
+      preLoaderRoute: typeof ArticleSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/ingest': {
@@ -104,8 +197,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CompaniesRoute: CompaniesRoute,
+  EconomyRoute: EconomyRoute,
   MarketsRoute: MarketsRoute,
+  OpinionRoute: OpinionRoute,
   TechnologyRoute: TechnologyRoute,
+  ArticleSlugRoute: ArticleSlugRoute,
   ApiPublicIngestRoute: ApiPublicIngestRoute,
 }
 export const routeTree = rootRouteImport
