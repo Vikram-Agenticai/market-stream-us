@@ -53,6 +53,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Escape" && onClose()}
+            data-testid="search-input"
             placeholder="Search headlines, companies, markets..."
             className="w-full bg-transparent font-sans text-lg outline-none placeholder:text-muted-foreground"
           />
