@@ -28,22 +28,35 @@ const FEEDS: { url: string; source: string }[] = [
 
 const MAX_ITEMS_PER_FEED = 30;
 
-function decodeEntities(input: string): string {
+const NAMED_ENTITIES: Record<string, string> = {
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: " ",
+  rsquo: "\u2019",
+  lsquo: "\u2018",
+  ldquo: "\u201C",
+  rdquo: "\u201D",
+  mdash: "\u2014",
+  ndash: "\u2013",
+  hellip: "\u2026",
+  amp: "&",
+};
+
+function decodeOnce(input: string): string {
   return input
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#0?39;|&apos;|&#x27;/g, "'")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&#8217;/g, "\u2019")
-    .replace(/&#8216;/g, "\u2018")
-    .replace(/&#8220;/g, "\u201C")
-    .replace(/&#8221;/g, "\u201D")
-    .replace(/&#8212;/g, "\u2014")
-    .replace(/&amp;/g, "&")
-    .trim();
+    .replace(/&#x([0-9a-f]+);/gi, (_m, hex: string) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_m, dec: string) => String.fromCodePoint(Number(dec)))
+    .replace(/&([a-z]+);/gi, (m, name: string) => NAMED_ENTITIES[name.toLowerCase()] ?? m);
 }
+
+function decodeEntities(input: string): string {
+  // Feeds frequently double-encode (&amp;#x2019;), so decode twice.
+  return decodeOnce(decodeOnce(input)).trim();
+}
+
 
 function stripTags(input: string): string {
   return decodeEntities(
