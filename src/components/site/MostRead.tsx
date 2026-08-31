@@ -9,15 +9,7 @@ export function MostRead({ limit = 6 }: { limit?: number }) {
   const [items, setItems] = useState<Awaited<ReturnType<typeof getMostRead>>>([]);
 
   useEffect(() => {
-    getMostRead({ data: { hours: 24, limit } })
-      .then((res) => {
-        console.log("MostRead", JSON.stringify(res));
-        setItems(res);
-      })
-      .catch((err) => {
-        console.error("MostRead error", JSON.stringify(err));
-        setItems([]);
-      });
+    getMostRead({ data: { hours: 24, limit } }).then(setItems).catch(() => setItems([]));
   }, [limit]);
 
   if (items.length === 0) return null;
