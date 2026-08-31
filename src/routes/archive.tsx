@@ -10,6 +10,7 @@ import {
   usDateRangeToIso,
   formatArchiveDate,
 } from "@/lib/format";
+import { ArchiveSkeleton, RouteStatus } from "@/components/site/Skeletons";
 
 type ArchiveSearch = {
   date?: string | undefined;
@@ -62,6 +63,18 @@ export const Route = createFileRoute("/archive")({
       },
     ],
   }),
+  pendingMs: 150,
+  pendingMinMs: 300,
+  pendingComponent: ArchiveSkeleton,
+  errorComponent: ({ error }) => (
+    <div className="mx-auto max-w-2xl px-4 py-24 text-center" role="alert">
+      <h1 className="text-3xl font-bold">The archive could not be loaded</h1>
+      <p className="mt-3 text-muted-foreground">{error.message}</p>
+      <Link to="/archive" className="kicker mt-6 inline-block">
+        Try again
+      </Link>
+    </div>
+  ),
   component: ArchivePage,
 });
 
@@ -156,13 +169,17 @@ function ArchivePage() {
         </div>
       </div>
 
-      <p className="meta-line py-4">
-        {range === "day"
-          ? formatArchiveDate(end)
-          : `${formatArchiveDate(start)} — ${formatArchiveDate(end)}`}
-        {" · "}
-        {articles.length} {articles.length === 1 ? "story" : "stories"}
-      </p>
+      <div className="flex flex-wrap items-center gap-3 py-4">
+        <p className="meta-line">
+          {range === "day"
+            ? formatArchiveDate(end)
+            : `${formatArchiveDate(start)} — ${formatArchiveDate(end)}`}
+          {" · "}
+          {articles.length} {articles.length === 1 ? "story" : "stories"}
+        </p>
+        <RouteStatus label="Updating results" />
+      </div>
+
 
       <AdSlot slotId="archive-top" format="leaderboard" />
 
