@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MarketsRouteImport } from './routes/markets'
+import { Route as TechnologyRouteImport } from './routes/technology'
 import { Route as ApiPublicIngestRouteImport } from './routes/api/public/ingest'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const MarketsRoute = MarketsRouteImport.update({
   path: '/markets',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TechnologyRoute = TechnologyRouteImport.update({
+  id: '/technology',
+  path: '/technology',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicIngestRoute = ApiPublicIngestRouteImport.update({
   id: '/api/public/ingest',
   path: '/api/public/ingest',
@@ -32,30 +38,34 @@ const ApiPublicIngestRoute = ApiPublicIngestRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/markets': typeof MarketsRoute
+  '/technology': typeof TechnologyRoute
   '/api/public/ingest': typeof ApiPublicIngestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/markets': typeof MarketsRoute
+  '/technology': typeof TechnologyRoute
   '/api/public/ingest': typeof ApiPublicIngestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/markets': typeof MarketsRoute
+  '/technology': typeof TechnologyRoute
   '/api/public/ingest': typeof ApiPublicIngestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/markets' | '/api/public/ingest'
+  fullPaths: '/' | '/markets' | '/technology' | '/api/public/ingest'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/markets' | '/api/public/ingest'
-  id: '__root__' | '/' | '/markets' | '/api/public/ingest'
+  to: '/' | '/markets' | '/technology' | '/api/public/ingest'
+  id: '__root__' | '/' | '/markets' | '/technology' | '/api/public/ingest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MarketsRoute: typeof MarketsRoute
+  TechnologyRoute: typeof TechnologyRoute
   ApiPublicIngestRoute: typeof ApiPublicIngestRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/technology': {
+      id: '/technology'
+      path: '/technology'
+      fullPath: '/technology'
+      preLoaderRoute: typeof TechnologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/ingest': {
       id: '/api/public/ingest'
       path: '/api/public/ingest'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MarketsRoute: MarketsRoute,
+  TechnologyRoute: TechnologyRoute,
   ApiPublicIngestRoute: ApiPublicIngestRoute,
 }
 export const routeTree = rootRouteImport
