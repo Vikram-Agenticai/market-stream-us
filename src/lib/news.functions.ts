@@ -122,3 +122,82 @@ export const getIngestStatus = createServerFn({ method: "GET" }).handler(async (
     .maybeSingle();
   return data ?? null;
 });
+
+export const searchArticles = createServerFn({ method: "GET" })
+  .inputValidator((data: { q?: string; limit?: number }) => data ?? {})
+  .handler(async ({ data }) => {
+    const query = (data.q ?? "").trim().slice(0, 120);
+    const limit = Math.min(data.limit ?? 20, 40);
+    if (!query || query.length < 2) return [] as Article[];
+
+    const supabase = publicClient();
+    const { data: rows, error } = await supabase
+      .from("articles")
+      .select(
+        "slug,title,summary,content,author,source_name,source_url,image_url,category,published_at,is_original,is_featured",
+      )
+      .or(`title.ilike.%${query}%,summary.ilike.%${query}%,content.ilike.%${query}%`)
+      .order("published_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error("searchArticles", error.message);
+      return [] as Article[];
+    }
+
+    const local = originals().filter(
+      (a) =>
+        a.title.toLowerCase().includes(query.toLowerCase()) ||
+        (a.summary ?? "").toLowerCase().includes(query.toLowerCase()) ||
+        (a.content ?? "").toLowerCase().includes(query.toLowerCase()),
+    );
+
+    return [...local, ...(rows ?? [])]
+      .sort((a, b) => +new Date(b.published_at) - +new Date(a.published_at))
+      .slice(0, limit) as Article[];
+  });
+
+export const recordArticleView = createServerFn({ method: "POST" })
+  .inputValidator((data: { slug: string }) => data)
+  .handler(async ({ data }) => {
+    const supabase = publicClient();
+    await supabase.from("article_views").insert({ slug: data.slug });
+    return { ok: true };
+  });
+
+export const getMostRead = createServerFn({ method: "GET" })
+  .inputValidator((data: { hours?: number; limit?: number } = {}) => data)
+  .handler(async ({ data }) => {
+    const hours = Math.min(data.hours ?? 24, 168);
+    const limit = Math.min(data.limit ?? 6, 20);
+    const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+
+    const supabase = publicClient();
+    const { data: rows, error } = await supabase.rpc("get_most_read", {
+      since,
+      limit_count: limit,
+    });
+
+    if (error) {
+      console.error("getMostRead", error.message);
+      return [] as Article[];
+    }
+
+    const slugs = (rows ?? []).map((r: { slug: string }) => r.slug);
+    if (slugs.length === 0) return [] as Article[];
+
+    const { data: articles, error: articlesError } = await supabase
+      .from("articles")
+      .select(
+        "slug,title,summary,content,author,source_name,source_url,image_url,category,published_at,is_original,is_featured",
+      )
+      .in("slug", slugs);
+
+    if (articlesError) {
+      console.error("getMostRead articles", articlesError.message);
+      return [] as Article[];
+    }
+
+    const map = new Map((articles ?? []).map((a) => [a.slug, a]));
+    return slugs.map((s) => map.get(s)).filter(Boolean) as Article[];
+  });
