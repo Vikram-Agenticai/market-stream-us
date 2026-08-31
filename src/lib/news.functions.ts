@@ -64,11 +64,7 @@ export const listArticles = createServerFn({ method: "GET" })
       : originals();
 
     return [...local, ...scraped]
-      .sort((a, b) => {
-        // Featured in-house reporting is pinned above the wire.
-        if (a.is_featured !== b.is_featured) return a.is_featured ? -1 : 1;
-        return +new Date(b.published_at) - +new Date(a.published_at);
-      })
+      .sort((a, b) => +new Date(b.published_at) - +new Date(a.published_at))
       .slice(0, limit);
 
   });
