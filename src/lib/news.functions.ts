@@ -77,9 +77,21 @@ export const getArticle = createServerFn({ method: "GET" })
   .inputValidator((data: { slug: string }) => data)
   .handler(async ({ data }) => {
     const local = originals().find((a) => a.slug === data.slug);
-    if (local) return { article: local, related: [] as Article[] };
-
     const supabase = publicClient();
+
+    if (local) {
+      const { data: localRelated } = await supabase
+        .from("articles")
+        .select(
+          "slug,title,summary,content,author,source_name,source_url,image_url,category,published_at,is_original,is_featured",
+        )
+        .eq("category", local.category)
+        .order("published_at", { ascending: false })
+        .limit(5);
+      return { article: local, related: (localRelated ?? []) as Article[] };
+    }
+
+
     const { data: row } = await supabase
       .from("articles")
       .select(
