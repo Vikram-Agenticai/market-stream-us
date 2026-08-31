@@ -144,13 +144,19 @@ function parseFeed(xml: string, sourceName: string): ParsedItem[] {
         ? (/-\s([^-]+)$/.exec(title)?.[1]?.trim() ?? null)
         : null);
 
-    const summaryText = stripTags(summarySource);
+    const cleanTitle = title.replace(/\s+-\s+[^-]{2,40}$/, "").trim();
+    // Aggregator feeds repeat the headline (and publisher name) inside the blurb.
+    let summaryText = stripTags(summarySource);
+    if (summaryText.startsWith(cleanTitle)) summaryText = summaryText.slice(cleanTitle.length);
+    summaryText = summaryText.replace(/^[\s\u2014\-–|:]+/, "").trim();
+    if (summaryText.length < 40) summaryText = "";
     const contentText = stripTags(contentSource);
 
     items.push({
       slug: `${slugify(title, hash(link))}-${hash(link)}`,
       title,
-      summary: summaryText ? summaryText.slice(0, 600) : null,
+      summary: summaryText ? summaryText.slice(0, 400) : null,
+
       content: contentText || null,
       author: author ? author.slice(0, 120) : null,
       source_name: sourceName,
