@@ -369,7 +369,7 @@ async function runIngest() {
         .eq("id", run.id);
     }
 
-    return { ok: true, inserted, updated, feeds: FEEDS.length, problems };
+    return { ok: true, inserted, updated, scraped, feeds: FEEDS.length, problems };
   } catch (error) {
     if (run) {
       await supabaseAdmin
