@@ -1,15 +1,14 @@
-import { useState } from "react";
-
-function shareUrl(slug: string) {
-  if (typeof window === "undefined") return "";
-  return `${window.location.origin}/article/${slug}`;
-}
+import { useEffect, useState } from "react";
 
 export function ShareButtons({ title, slug }: { title: string; slug: string }) {
   const [copied, setCopied] = useState(false);
-  const url = shareUrl(slug);
+  const [url, setUrl] = useState("");
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
+
+  useEffect(() => {
+    setUrl(`${window.location.origin}/article/${slug}`);
+  }, [slug]);
 
   const handleCopy = async () => {
     try {
