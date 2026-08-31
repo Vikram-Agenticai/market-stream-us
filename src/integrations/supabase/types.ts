@@ -121,7 +121,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_most_read: {
+        Args: { limit_count: number; since: string }
+        Returns: {
+          slug: string
+          view_count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
