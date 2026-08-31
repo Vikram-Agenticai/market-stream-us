@@ -14,7 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      articles: {
+        Row: {
+          author: string | null
+          category: string
+          content: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          is_featured: boolean
+          is_original: boolean
+          published_at: string
+          slug: string
+          source_name: string | null
+          source_url: string | null
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          category?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_original?: boolean
+          published_at?: string
+          slug: string
+          source_name?: string | null
+          source_url?: string | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          category?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_original?: boolean
+          published_at?: string
+          slug?: string
+          source_name?: string | null
+          source_url?: string | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ingest_runs: {
+        Row: {
+          finished_at: string | null
+          id: string
+          inserted_count: number
+          message: string | null
+          started_at: string
+          status: string
+          updated_count: number
+        }
+        Insert: {
+          finished_at?: string | null
+          id?: string
+          inserted_count?: number
+          message?: string | null
+          started_at?: string
+          status?: string
+          updated_count?: number
+        }
+        Update: {
+          finished_at?: string | null
+          id?: string
+          inserted_count?: number
+          message?: string | null
+          started_at?: string
+          status?: string
+          updated_count?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
