@@ -11,7 +11,11 @@ import {
   formatArchiveDate,
 } from "@/lib/format";
 
-type ArchiveSearch = { date?: string; range?: "day" | "week" | "month"; category?: string };
+type ArchiveSearch = {
+  date?: string | undefined;
+  range?: "day" | "week" | "month" | undefined;
+  category?: string | undefined;
+};
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
