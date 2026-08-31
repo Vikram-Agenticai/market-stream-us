@@ -42,8 +42,8 @@ export const Route = createFileRoute("/archive")({
     const [articles, days] = await Promise.all([
       listArticlesByDate({
         data: { from, to, limit: 200, ...(deps.category ? { category: deps.category } : {}) },
-      }),
-      getArchiveDays({ data: { days: 60 } }),
+      }).catch(() => []),
+      getArchiveDays({ data: { days: 60 } }).catch(() => []),
     ]);
     return { articles, days, start, end };
   },
