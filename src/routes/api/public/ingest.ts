@@ -310,15 +310,38 @@ async function runIngest() {
     }
     const items = [...bySlug.values()];
 
+    let scraped = 0;
+
     if (items.length > 0) {
       const { data: existing } = await supabaseAdmin
         .from("articles")
-        .select("slug")
+        .select("slug, content")
         .in(
           "slug",
           items.map((i) => i.slug),
         );
       const existingSlugs = new Set((existing ?? []).map((r) => r.slug));
+      const alreadyFull = new Set(
+        (existing ?? []).filter((r) => (r.content?.length ?? 0) > 900).map((r) => r.slug),
+      );
+
+      // Pull the complete body from the publisher page for anything we do not
+      // already have a full story for.
+      await mapWithLimit(
+        items.filter((item) => !alreadyFull.has(item.slug)),
+        FETCH_CONCURRENCY,
+        async (item) => {
+          const full = await fetchFullText(item.source_url);
+          if (full) {
+            item.content = full;
+            scraped += 1;
+            if (!item.summary) {
+              const firstParagraph = full.split("\n\n")[0] ?? "";
+              item.summary = firstParagraph.slice(0, 400) || null;
+            }
+          }
+        },
+      );
 
       const { error } = await supabaseAdmin
         .from("articles")
@@ -327,6 +350,7 @@ async function runIngest() {
           { onConflict: "slug" },
         );
       if (error) throw new Error(error.message);
+
 
       inserted = items.filter((i) => !existingSlugs.has(i.slug)).length;
       updated = items.length - inserted;
