@@ -90,7 +90,99 @@ function hash(value: string): string {
   return h.toString(36);
 }
 
+const NOISE = /^(skip to|sign in|subscribe|advertisement|read more|related:|share this|©|copyright|by clicking|this story|newsletter|get the )/i;
+
+function cleanParagraph(value: string): string {
+  return stripTags(value).replace(/[ \t]{2,}/g, " ").trim();
+}
+
+function usableParagraphs(html: string): string[] {
+  const scope = /<article[\s\S]*?<\/article>/i.exec(html)?.[0] ?? html;
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const match of scope.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
+    const text = cleanParagraph(match[1] ?? "");
+    if (text.length < 60) continue;
+    if (NOISE.test(text)) continue;
+    if (!/[.!?"”']$/.test(text) && text.length < 120) continue;
+    if (seen.has(text)) continue;
+    seen.add(text);
+    out.push(text);
+  }
+  return out;
+}
+
+function articleBodyFromJsonLd(html: string): string | null {
+  for (const match of html.matchAll(
+    /<script[^>]+application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi,
+  )) {
+    try {
+      const parsed = JSON.parse((match[1] ?? "").trim());
+      const nodes: any[] = Array.isArray(parsed)
+        ? parsed
+        : Array.isArray(parsed?.["@graph"])
+          ? parsed["@graph"]
+          : [parsed];
+      for (const node of nodes) {
+        const body: unknown = node?.articleBody;
+        if (typeof body === "string" && body.trim().length > 500) {
+          return body
+            .split(/\n{1,}/)
+            .map((line) => cleanParagraph(line))
+            .filter(Boolean)
+            .join("\n\n");
+        }
+      }
+    } catch {
+      // Ignore malformed JSON-LD blocks.
+    }
+  }
+  return null;
+}
+
+// Visits the publisher's page and extracts the complete story text so readers
+// get the whole article on our site instead of a teaser plus an outbound link.
+async function fetchFullText(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      headers: { "user-agent": BROWSER_UA, accept: "text/html,*/*;q=0.8" },
+      redirect: "follow",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const fromLd = articleBodyFromJsonLd(html);
+    const paragraphs = usableParagraphs(html);
+    const fromParagraphs = paragraphs.join("\n\n");
+    const best =
+      (fromLd?.length ?? 0) >= fromParagraphs.length ? (fromLd ?? fromParagraphs) : fromParagraphs;
+    return best.length > 600 ? best.slice(0, 40_000) : null;
+  } catch {
+    return null;
+  }
+}
+
+async function mapWithLimit<T, R>(
+  values: T[],
+  limit: number,
+  worker: (value: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(values.length);
+  let cursor = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(limit, values.length) }, async () => {
+      while (cursor < values.length) {
+        const index = cursor;
+        cursor += 1;
+        results[index] = await worker(values[index] as T);
+      }
+    }),
+  );
+  return results;
+}
+
 type ParsedItem = {
+
   slug: string;
   title: string;
   summary: string | null;
