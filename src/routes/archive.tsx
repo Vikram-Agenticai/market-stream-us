@@ -66,10 +66,10 @@ export const Route = createFileRoute("/archive")({
   pendingMs: 150,
   pendingMinMs: 300,
   pendingComponent: ArchiveSkeleton,
-  errorComponent: ({ error }) => (
+  errorComponent: ({ error }: { error: unknown }) => (
     <div className="mx-auto max-w-2xl px-4 py-24 text-center" role="alert">
       <h1 className="text-3xl font-bold">The archive could not be loaded</h1>
-      <p className="mt-3 text-muted-foreground">{error.message}</p>
+      <p className="mt-3 text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
       <Link to="/archive" className="kicker mt-6 inline-block">
         Try again
       </Link>

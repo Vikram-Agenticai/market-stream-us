@@ -41,10 +41,10 @@ export const Route = createFileRoute("/article/$slug")({
   pendingMinMs: 300,
   pendingComponent: ArticleSkeleton,
   notFoundComponent: StoryNotFound,
-  errorComponent: ({ error }) => (
+  errorComponent: ({ error }: { error: unknown }) => (
     <div className="mx-auto max-w-2xl px-4 py-24 text-center" role="alert">
       <h1 className="text-3xl font-bold">This story could not be loaded</h1>
-      <p className="mt-3 text-muted-foreground">{error.message}</p>
+      <p className="mt-3 text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
       <Link to="/" className="kicker mt-6 inline-block">
         Back to the front page
       </Link>
